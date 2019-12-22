@@ -7,8 +7,7 @@ const express = require('express'),
 	passport = require('passport'),
 	LocalStrategy = require('passport-local'),
 	methodOverride = require('method-override'),
-	logger = require('morgan'),
-	dotenv = require('dotenv');
+	logger = require('morgan');
 
 // Requiring user model
 const User = require('./models/user');
@@ -18,12 +17,7 @@ const indexRouter = require('./routes/index'),
 	commentsRouter = require('./routes/comments'),
 	campgroundsRouter = require('./routes/campgrounds');
 
-const app = express(),
-	result = dotenv.config();
-
-if (result.error) {
-	throw result.error;
-}
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -53,7 +47,7 @@ passport.deserializeUser(User.deserializeUser());
 // Database connection
 mongoose
 	.connect(
-		process.env.DB, {
+		process.env.DB || 'mongodb://localhost/yelpcamp', {
 			useNewUrlParser:    true,
 			useUnifiedTopology: true,
 			useFindAndModify:   false
