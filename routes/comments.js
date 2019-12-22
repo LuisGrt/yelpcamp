@@ -1,115 +1,28 @@
 const router = require('express').Router({ mergeParams: true }),
-	Campground = require('../models/campground'),
-	Comment = require('../models/comment'),
+	controller = require('../controllers/comments'),
 	middleware = require('../middleware');
 
-let message;
-
-router.post('/', middleware.isLoggedIn, (req, res) => {
-	Campground.findById(req.params.id, (err, campground) => {
-		if (err) {
-			message = ['Yikes! This seems like an error...', err.message];
-			req.flash('error', message);
-			res.redirect('back');
-		} else if (campground) {
-			const newComment = {
-				text:   req.body.comment,
-				author: {
-					id:       req.user._id,
-					username: req.user.username
-				}
-			};
-			Comment.create(newComment, function(err, comment) {
-				if (err) {
-					message = ['Something went wrong...', err.message];
-					req.flash('error', message);
-					res.redirect('back');
-				} else {
-					campground.comments.push(comment);
-					campground.save();
-					message = ['Success!', 'New comment added!'];
-					req.flash('success', message);
-					res.redirect(`/campgrounds/${campground._id}`);
-				}
-			});
-		}
-	});
-});
+router.post('/', middleware.isLoggedIn, controller.create);
 
 router.get(
 	'/:commentId/edit',
 	middleware.isLoggedIn,
 	middleware.checkCommentOwnership,
-	(req, res) => {
-		Comment.findById(req.params.commentId, (err, comment) => {
-			if (err) {
-				message = ['Something went wrong...', err.message];
-				req.flash('error', message);
-				res.redirect('back');
-			} else if(comment) {
-				res.render('comments/edit', {
-					campgroundId: req.params.id,
-					comment:      comment
-				});
-			} else {
-				message = [
-					'404 Not Found',
-					'Sorry, we could not find the campground you\'re looking for.'
-				];
-				req.flash('error', message);
-				res.redirect('back');
-			}
-		});
-	}
+	controller.edit
 );
 
 router.put(
 	'/:commentId',
 	middleware.isLoggedIn,
 	middleware.checkCommentOwnership,
-	(req, res) => {
-		Comment.findByIdAndUpdate(req.params.commentId, req.body.comment, (err) => {
-			if (err){
-				message = ['Something went wrong...', err.message];
-				req.flash('error', message);
-				res.redirect('back');
-			} else {
-				message = ['It\'s done!', 'Your comment has been updated successfully!'];
-				req.flash('success', message);
-				res.redirect(`/campgrounds/${req.params.id}` );
-			}
-		});
-	}
+	controller.update
 );
 
 router.delete(
 	'/:commentId',
 	middleware.isLoggedIn,
 	middleware.checkCommentOwnership,
-	(req, res) => {
-		Campground.findById(req.params.id, (err, campground) => {
-			if (err) {
-				message = ['Something went wrong...', err.message];
-				req.flash('error', message);
-				res.redirect('back');
-				return;
-			}
-			Comment.findByIdAndRemove(req.params.commentId, err => {
-				if (err) {
-					message = ['Something went wrong...', err.message];
-					req.flash('error', message);
-					res.redirect('back');
-				} else {
-					const index = campground.comments.indexOf(req.params.commentId);
-					campground.comments.splice(index, 1);
-					campground.save();
-					message = ['Done!', 'Your comment has been deleted.'];
-					req.flash('success', message);
-					res.redirect(`/campgrounds/${req.params.id}`);
-				}
-			});
-		});
-	}
+	controller.delete
 );
 
 module.exports = router;
