@@ -41,7 +41,7 @@ router.post('/', middleware.isLoggedIn, (req, res) => {
 			req.flash('error', message);
 			res.redirect('/campgrounds');
 		} else {
-			message = ['Awesome!', `The new '${newCamp.name}' campground has been added to our database.`];
+			message = ['Awesome!', `The new '<strong>${newCamp.name}</strong>' campground has been added to our database.`];
 			req.flash('success', message);
 			res.redirect('/campgrounds');
 		}
