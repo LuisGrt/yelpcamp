@@ -62,7 +62,7 @@ mongoose
 				res.cookie('yelpcamp', 1, {
 					maxAge:   9000000,
 					httpOnly: true,
-					sameSite: 'None',
+					sameSite: false,
 					secure:   true
 				});
 			}
