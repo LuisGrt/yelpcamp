@@ -58,14 +58,6 @@ mongoose
 			res.locals.currentUser = req.user;
 			res.locals.error = req.flash('error');
 			res.locals.success = req.flash('success');
-			if(!req.cookies.yelpcamp) {
-				res.cookie('yelpcamp', 1, {
-					maxAge:   9000000,
-					httpOnly: true,
-					sameSite: false,
-					secure:   true
-				});
-			}
 			next();
 		});
 
