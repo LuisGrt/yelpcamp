@@ -3,6 +3,14 @@ section#landing {
   height: 100vh;
 }
 
+section#landing .alert {
+  position: absolute;
+  right: 30px;
+  top: 30px;
+  z-index: 2;
+  display: inline-block;
+}
+
 section#landing .landing.header {
   z-index: 1;
   position: relative;

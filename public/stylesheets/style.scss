@@ -1,6 +1,13 @@
 section#landing {
 	background-color: black;
 	height: 100vh;
+	.alert {
+		position: absolute;
+		right: 30px;
+		top: 30px;
+		z-index: 2;
+		display: inline-block;
+	}
 	.landing.header {
 		z-index: 1;
   	position: relative;
