@@ -37,16 +37,18 @@ controller.create = (req, res) => {
 	googleMapsClient.geocode({address: newCamp.address})
 		.asPromise()
 		.then((response) => {
-			newCamp.address = response.json.results[0].formatted_address;
-			newCamp.location = response.json.results[0].geometry.location;
+			if (response.json.results.length > 0) {
+				newCamp.address = response.json.results[0].formatted_address;
+				newCamp.location = response.json.results[0].geometry.location;
+			}
 			Campground.create(newCamp, (err, camp) => {
 				if (err) {
 					message = [
-						'Sorry! There was an error creating the new campground.',
+						'Sorry! We couldn\'t create the new campground',
 						err.message
 					];
 					req.flash('error', message);
-					res.redirect('/campgrounds');
+					res.redirect('back');
 				} else {
 					message = ['Awesome!', `The new '<strong>${camp.name}</strong>' campground has been added to our database.`];
 					req.flash('success', message);
@@ -56,7 +58,7 @@ controller.create = (req, res) => {
 		})
 		.catch((err) => {
 			message = [
-				'Sorry! There was an error creating the new campground.',
+				'Sorry! We couldn\'t create the new campground',
 				err.json.error_message
 			];
 			req.flash('error', message);
@@ -113,40 +115,54 @@ controller.update = (req, res) => {
 			req.flash('error', message);
 			res.redirect('back');
 		} else if (campground) {
-			if (campground.address !== req.body.campground.address) {
-				googleMapsClient.geocode({address: req.body.campground.address})
-					.asPromise()
-					.then((response) => {
-						campground.address = response.json.results[0].formatted_address;
-						campground.location = response.json.results[0].geometry.location;
-						campground.name = req.body.campground.name;
-						campground.image = req.body.campground.image;
-						campground.price = req.body.campground.price;
-						campground.description = req.body.campground.description;
-						campground.lastEditedOn = Date.now();
-						campground.save();
-						message = ['Looking good!', 'The campground has been updated successfully.'];
-						req.flash('success', message);
-						res.redirect(`/campgrounds/${req.params.id}`);
-					})
-					.catch((err) => {
-						message = [
-							'Sorry! There was an error updating the campground.',
-							err.json.error_message
-						];
-						req.flash('error', message);
-						res.redirect('back');
-					});
+			const price = Number(req.body.campground.price);
+			if (isNaN(price)) {
+				message = [
+					'Wait! Something is not right...',
+					'The <strong><em>price</em></strong> should be <strong>numbers only</strong>, please check that up and try again.'
+				];
+				req.flash('error', message);
+				res.redirect('back');
 			} else {
-				campground.name = req.body.campground.name;
-				campground.image = req.body.campground.image;
-				campground.price = req.body.campground.price;
-				campground.description = req.body.campground.description;
-				campground.lastEditedOn = Date.now();
-				campground.save();
-				message = ['Looking good!', 'The campground has been updated successfully.'];
-				req.flash('success', message);
-				res.redirect(`/campgrounds/${req.params.id}`);
+				if (campground.address !== req.body.campground.address) {
+					googleMapsClient.geocode({address: req.body.campground.address})
+						.asPromise()
+						.then((response) => {
+							if (response.json.results.length > 0) {
+								campground.address = response.json.results[0].formatted_address;
+								campground.location = response.json.results[0].geometry.location;
+							} else {
+								campground.address = req.body.campground.address;
+							}
+							campground.name = req.body.campground.name;
+							campground.image = req.body.campground.image;
+							campground.price = req.body.campground.price;
+							campground.description = req.body.campground.description;
+							campground.lastEditedOn = Date.now();
+							campground.save();
+							message = ['Looking good!', 'The campground has been updated successfully.'];
+							req.flash('success', message);
+							res.redirect(`/campgrounds/${req.params.id}`);
+						})
+						.catch((err) => {
+							message = [
+								'Sorry! There was an error updating the campground.',
+								err.json.error_message
+							];
+							req.flash('error', message);
+							res.redirect('back');
+						});
+				} else {
+					campground.name = req.body.campground.name;
+					campground.image = req.body.campground.image;
+					campground.price = req.body.campground.price;
+					campground.description = req.body.campground.description;
+					campground.lastEditedOn = Date.now();
+					campground.save();
+					message = ['Looking good!', 'The campground has been updated successfully.'];
+					req.flash('success', message);
+					res.redirect(`/campgrounds/${req.params.id}`);
+				}
 			}
 		} else {
 			message = [
