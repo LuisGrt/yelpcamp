@@ -38,7 +38,7 @@ controller.create = (req, res) => {
 		.then((response) => {
 			newCamp.address = response.json.results[0].formatted_address;
 			newCamp.location = response.json.results[0].geometry.location;
-			Campground.create(newCamp, err => {
+			Campground.create(newCamp, (err, camp) => {
 				if (err) {
 					message = [
 						'Sorry! There was an error creating the new campground.',
@@ -47,9 +47,9 @@ controller.create = (req, res) => {
 					req.flash('error', message);
 					res.redirect('/campgrounds');
 				} else {
-					message = ['Awesome!', `The new '<strong>${newCamp.name}</strong>' campground has been added to our database.`];
+					message = ['Awesome!', `The new '<strong>${camp.name}</strong>' campground has been added to our database.`];
 					req.flash('success', message);
-					res.redirect(`/campgrounds/${newCamp._id}`);
+					res.redirect(`/campgrounds/${camp._id}`);
 				}
 			});
 		})
