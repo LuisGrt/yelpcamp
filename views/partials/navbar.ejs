@@ -14,7 +14,7 @@
 				<% if(currentUser) { %>
 					<li class="nav-item">
 						<a href="#" class="nav-link">
-							<strong><%=currentUser.username%></strong>
+							Signed in as <strong><%=currentUser.username%></strong>
 							<%if(currentUser.isAdmin){%>(Admin)<%}%>
 						</a>
 					</li>
