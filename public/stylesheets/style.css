@@ -174,4 +174,10 @@ section#loginForm .card h3 {
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #dee2e6 !important;
 }
+
+#map {
+  margin: 2rem 0;
+  width: 100%;
+  height: 400px;
+}
 /*# sourceMappingURL=style.css.map */

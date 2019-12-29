@@ -1,5 +1,9 @@
-const moment 		 = require('moment'),
-	Campground		 = require('../models/campground');
+const moment 		 		= require('moment'),
+	Campground		 		= require('../models/campground'),
+	googleMapsClient 	= require('@google/maps').createClient({
+		key:     process.env.GEO_API,
+		Promise: Promise
+	});
 
 let message;
 
@@ -29,20 +33,34 @@ controller.create = (req, res) => {
 			username: req.user.username
 		}
 	};
-	Campground.create(newCamp, err => {
-		if (err) {
+	googleMapsClient.geocode({address: newCamp.address})
+		.asPromise()
+		.then((response) => {
+			newCamp.address = response.json.results[0].formatted_address;
+			newCamp.location = response.json.results[0].geometry.location;
+			Campground.create(newCamp, err => {
+				if (err) {
+					message = [
+						'Sorry! There was an error creating the new campground.',
+						err.message
+					];
+					req.flash('error', message);
+					res.redirect('/campgrounds');
+				} else {
+					message = ['Awesome!', `The new '<strong>${newCamp.name}</strong>' campground has been added to our database.`];
+					req.flash('success', message);
+					res.redirect(`/campgrounds/${newCamp._id}`);
+				}
+			});
+		})
+		.catch((err) => {
 			message = [
 				'Sorry! There was an error creating the new campground.',
-				err.message
+				err.json.error_message
 			];
 			req.flash('error', message);
 			res.redirect('/campgrounds');
-		} else {
-			message = ['Awesome!', `The new '<strong>${newCamp.name}</strong>' campground has been added to our database.`];
-			req.flash('success', message);
-			res.redirect('/campgrounds');
-		}
-	});
+		});
 };
 
 controller.show = (req, res) => {
@@ -88,25 +106,56 @@ controller.edit = (req, res) => {
 };
 
 controller.update = (req, res) => {
-	Campground.findByIdAndUpdate(
-		req.params.id,
-		req.body.campground,
-		(err, campground) => {
-			if (err) {
-				message = ['Yikes! It\'s an error...', err.message];
-				req.flash('error', message);
-				res.redirect('back');
-			} else if (campground) {
-				res.redirect('/campgrounds/' + req.params.id);
+	Campground.findById(req.params.id, (err, campground) => {
+		if (err) {
+			message = ['Yikes! It\'s an error...', err.message];
+			req.flash('error', message);
+			res.redirect('back');
+		} else if (campground) {
+			if (campground.address !== req.body.campground.address) {
+				googleMapsClient.geocode({address: req.body.campground.address})
+					.asPromise()
+					.then((response) => {
+						campground.address = response.json.results[0].formatted_address;
+						campground.location = response.json.results[0].geometry.location;
+						campground.name = req.body.campground.name;
+						campground.image = req.body.campground.image;
+						campground.price = req.body.campground.price;
+						campground.description = req.body.campground.description;
+						campground.lastEditedOn = Date.now();
+						campground.save();
+						message = ['Looking good!', 'The campground has been updated successfully.'];
+						req.flash('success', message);
+						res.redirect(`/campgrounds/${req.params.id}`);
+					})
+					.catch((err) => {
+						message = [
+							'Sorry! There was an error updating the campground.',
+							err.json.error_message
+						];
+						req.flash('error', message);
+						res.redirect('back');
+					});
 			} else {
-				message = [
-					'404 Not Found',
-					'Sorry, we could not find the campground you\'re looking for.'
-				];
-				req.flash('error', message);
-				res.redirect('back');
+				campground.name = req.body.campground.name;
+				campground.image = req.body.campground.image;
+				campground.price = req.body.campground.price;
+				campground.description = req.body.campground.description;
+				campground.lastEditedOn = Date.now();
+				campground.save();
+				message = ['Looking good!', 'The campground has been updated successfully.'];
+				req.flash('success', message);
+				res.redirect(`/campgrounds/${req.params.id}`);
 			}
+		} else {
+			message = [
+				'404 Not Found',
+				'Sorry, we could not find the campground you\'re looking for.'
+			];
+			req.flash('error', message);
+			res.redirect('back');
 		}
+	}
 	);
 };
 

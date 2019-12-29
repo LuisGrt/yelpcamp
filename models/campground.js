@@ -4,7 +4,12 @@ const mongoose = require('mongoose'),
 		image:       String,
 		description: String,
 		price:       Number,
-		author:      {
+		address:     String,
+		location:    {
+			lat: Number,
+			lng: Number
+		},
+		author: {
 			id: {
 				type: mongoose.Schema.Types.ObjectId,
 				ref:  'User'
@@ -20,6 +25,10 @@ const mongoose = require('mongoose'),
 		created: {
 			type:    Date,
 			default: Date.now
+		},
+		lastEditedOn: {
+			type:    Date,
+			default: null
 		}
 	});
 

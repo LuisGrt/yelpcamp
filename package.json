@@ -4,9 +4,11 @@
 	"private": true,
 	"scripts": {
 		"start": "node ./bin/www",
+		"dev": "@powershell -Command $env:ENV='development';node ./bin/www",
 		"debug": "@powershell -Command $env:DEBUG='*';node ./bin/www"
 	},
 	"dependencies": {
+		"@google/maps": "^1.0.2",
 		"connect-flash": "^0.1.1",
 		"cookie-parser": "^1.4.4",
 		"debug": "^4.1.1",
@@ -22,5 +24,7 @@
 		"passport-local": "^1.0.0",
 		"passport-local-mongoose": "^5.0.1"
 	},
-	"devDependencies": {}
+	"devDependencies": {
+		"dotenv": "^8.2.0"
+	}
 }

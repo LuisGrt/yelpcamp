@@ -9,6 +9,13 @@ const express = require('express'),
 	methodOverride = require('method-override'),
 	logger = require('morgan');
 
+const app = express();
+
+if (process.env.ENV==='development') {
+	console.log('Development mode!');
+	require('dotenv').config();
+}
+
 // Requiring user model
 const User = require('./models/user');
 
@@ -16,8 +23,6 @@ const User = require('./models/user');
 const indexRouter = require('./routes/index'),
 	commentsRouter = require('./routes/comments'),
 	campgroundsRouter = require('./routes/campgrounds');
-
-const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -82,7 +87,7 @@ mongoose
 			res.locals.message = '500 Internal Server Error';
 
 			// render the error page
-			res.status(404);
+			res.status(500);
 			res.render('error');
 		});
 	});

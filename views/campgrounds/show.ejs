@@ -1,6 +1,6 @@
 <% include ../partials/header %>
 		<% include ../partials/navbar %>
-		<section class="container mt-5">
+		<section class="container mt-4 mt-md-5">
 			<% if(error && error.length > 0) { %>
 				<div class="alert alert-danger alert-dismissible fade show mb-5" role="alert">
 					<h4 class="alert-heading"><%-error[0]%></h4>
@@ -23,12 +23,13 @@
 				<div class="col-md-4">
 					<p class="lead"><%=campground.name%></p>
 					<div class="list-group">
-							<li class="list-group-item active">Info 1</li>
-							<li class="list-group-item">Info 2</li>
-							<li class="list-group-item">Info 3</li>
+						<li class="list-group-item active">Info 1</li>
+						<li class="list-group-item">Info 2</li>
+						<li class="list-group-item">Info 3</li>
 					</div>
+					<div id="map"></div>
 				</div>
-				<div class="col-md-8 mt-4 mt-md-0">
+				<div class="col-md-8">
 					<div class="card">
 						<img class="img-fluid card-img-top" src="<%= campground.image %>" alt="Image of the campground">
 						<div class="card-body">
@@ -47,8 +48,8 @@
 							<% } %>
 						</div>
 						<div class="card-footer d-flex justify-content-between">
-								<span class="text-muted font-italic">Submitted By <%= campground.author.username %></span>
-								<span class="text-muted font-italic"><%=moment(campground.created).fromNow()%></span>
+							<span class="text-muted font-italic">Submitted By <%= campground.author.username %></span>
+							<span class="text-muted font-italic"><%=moment(campground.created).fromNow()%></span>
 						</div>
 					</div>
 					<div class="card my-4">
@@ -107,4 +108,34 @@
 				</div>
 			</div>
 		</div>
+
+		<script>
+			function initMap() {
+				const center = {
+					lat: <%= campground.location.lat || 40.714224 %>,
+					lng: <%= campground.location.lng || -73.961452 %>
+				},
+				map = new google.maps.Map(document.getElementById('map'), {
+					zoom: 12,
+					center: center,
+					scrollwheel: false
+				}),
+				infowindow = new google.maps.InfoWindow({
+					content: `
+					<strong><%= campground.name %><br />
+					<%= campground.address %></strong>
+					<p><%= campground.description %></p>
+				`
+				}),
+				marker = new google.maps.Marker({
+					position: center,
+					map: map
+				});
+				marker.addListener('click', () => {
+					infowindow.open(map, marker);
+				});
+			}
+		</script>
+		<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7eH_tm1TxEudO-L7A-2LZkDtDg3l3VfQ&callback=initMap"></script>
+
 <% include ../partials/footer %>
