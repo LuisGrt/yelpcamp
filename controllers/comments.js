@@ -59,7 +59,12 @@ controller.edit = (req, res) => {
 };
 
 controller.update = (req, res) => {
-	Comment.findByIdAndUpdate(req.params.commentId, req.body.comment, (err) => {
+	const commentEdited = {
+		...req.body.comment,
+		lastEditedOn: Date.now()
+	};
+	console.log(commentEdited);
+	Comment.findByIdAndUpdate(req.params.commentId, commentEdited, (err) => {
 		if (err){
 			message = ['Something went wrong...', err.message];
 			req.flash('error', message);

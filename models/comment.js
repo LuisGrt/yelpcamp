@@ -11,6 +11,10 @@ const mongoose = require('mongoose'),
 		created: {
 			type:    Date,
 			default: Date.now
+		},
+		lastEditedOn: {
+			type:    Date,
+			default: null
 		}
 	});
 

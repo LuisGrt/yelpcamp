@@ -49,7 +49,10 @@
 						</div>
 						<div class="card-footer d-flex justify-content-between">
 							<span class="text-muted font-italic">Submitted By <%= campground.author.username %></span>
-							<span class="text-muted font-italic"><%=moment(campground.created).fromNow()%></span>
+							<span class="text-muted font-italic">Created: <%=moment(campground.created).fromNow()%></span>
+							<% if(campground.lastEditedOn) { %>
+								<span class="text-muted font-italic">Edited: <%=moment(campground.lastEditedOn).fromNow()%></span>
+							<% } %>
 						</div>
 					</div>
 					<div class="card my-4">
@@ -65,7 +68,12 @@
 									<div class="card my-2">
 										<div class="card-header d-flex justify-content-between">
 											<strong><%= comment.author.username %></strong>
-											<span class="text-muted font-italic"><%=moment(comment.created).fromNow()%></span>
+											<span class="text-muted font-italic">
+												<%=moment(comment.created).fromNow()%>
+												<% if(comment.lastEditedOn) { %>
+													<span class="small">(edited <%=moment(comment.lastEditedOn).fromNow()%>)</span>
+												<% } %>
+											</span>
 										</div>
 										<div class="card-body">
 											<p class="card-text"><%= comment.text %></p>
