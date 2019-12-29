@@ -21,11 +21,10 @@
 			<% } %>
 			<div class="row">
 				<div class="col-md-4">
-					<p class="lead"><%=campground.name%></p>
 					<div class="list-group">
-						<li class="list-group-item active">Info 1</li>
-						<li class="list-group-item">Info 2</li>
-						<li class="list-group-item">Info 3</li>
+						<li class="list-group-item active"><strong><%=campground.name%></strong></li>
+						<li class="list-group-item"><strong>Submitted by:</strong><br><%=campground.author.username%></li>
+						<li class="list-group-item"><strong>Address:</strong><br><%=campground.address%></li>
 					</div>
 					<div id="map"></div>
 				</div>
@@ -48,7 +47,6 @@
 							<% } %>
 						</div>
 						<div class="card-footer d-flex justify-content-between">
-							<span class="text-muted font-italic">Submitted By <%= campground.author.username %></span>
 							<span class="text-muted font-italic">Created: <%=moment(campground.created).fromNow()%></span>
 							<% if(campground.lastEditedOn) { %>
 								<span class="text-muted font-italic">Edited: <%=moment(campground.lastEditedOn).fromNow()%></span>
