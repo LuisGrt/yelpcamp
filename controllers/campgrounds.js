@@ -1,5 +1,6 @@
 const moment 		 		= require('moment'),
 	Campground		 		= require('../models/campground'),
+	Comment						= require('../models/comment'),
 	googleMapsClient 	= require('@google/maps').createClient({
 		key:     process.env.GEO_API,
 		Promise: Promise
@@ -160,17 +161,35 @@ controller.update = (req, res) => {
 };
 
 controller.delete = (req, res) => {
-	Campground.findByIdAndRemove(req.params.id, function(err) {
+	Campground.findById(req.params.id, async (err, campground) => {
 		if (err) {
 			message = ['Yikes! It\'s an error...', err.message];
 			req.flash('error', message);
 			res.redirect('/campgrounds');
+		} else if (campground) {
+			Campground.deleteOne({_id: campground._id}, {single: true}, err => {
+				if(err) {
+					message = [
+						'Something bad happened...',
+						err.message
+					];
+					req.flash('error', message);
+					res.redirect('/campgrounds');
+				} else {
+					campground.comments.forEach(async comment => {
+						await Comment.deleteOne({_id: comment}, {single: true});
+					});
+					message = [
+						'Campground deleted!',
+						'The campground has been deleted successfully from our database.'
+					];
+					req.flash('success', message);
+					res.redirect('/campgrounds');
+				}
+			});
 		} else {
-			message = [
-				'Campground deleted!',
-				'The campground has been deleted successfully from our database.'
-			];
-			req.flash('success', message);
+			message = ['Yikes! It\'s an error...', err.message];
+			req.flash('error', message);
 			res.redirect('/campgrounds');
 		}
 	});
