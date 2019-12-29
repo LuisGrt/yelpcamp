@@ -14,7 +14,7 @@ middleware.checkCampgroundOwnership = (req, res, next) => {
 			res.redirect('back');
 		} else {
 			// does user own the campground?
-			if (campground.author.id.equals(req.user._id)) {
+			if (campground.author.id.equals(req.user._id) || req.user.isAdmin) {
 				next();
 			} else {
 				message = ['Unauthorized', 'You don\'t have permission to do that!'];
@@ -36,7 +36,7 @@ middleware.checkCommentOwnership = (req, res, next) => {
 			res.redirect('back');
 		} else {
 			// does user own the comment?
-			if (comment.author.id.equals(req.user._id)) {
+			if (comment.author.id.equals(req.user._id) || req.user.isAdmin) {
 				next();
 			} else {
 				message = ['Unauthorized', 'You don\'t have permission to do that!'];

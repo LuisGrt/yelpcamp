@@ -1,6 +1,6 @@
 <% include ../partials/header %>
 		<% include ../partials/navbar %>
-		<section class="container mt-4 mt-md-5">
+		<section id="campground" class="container mt-4 mt-md-5">
 			<% if(error && error.length > 0) { %>
 				<div class="alert alert-danger alert-dismissible fade show mb-5" role="alert">
 					<h4 class="alert-heading"><%-error[0]%></h4>
@@ -38,8 +38,8 @@
 								<p class="card-subtitle text-muted"><strong>$<%=campground.price%>/night</strong></p>
 							</div>
 							<p class="card-text"><%= campground.description %></p>
-							<% if(currentUser && campground.author.id.equals(currentUser._id)){ %>
-								<div class="d-flex">
+							<% if(currentUser && (campground.author.id.equals(currentUser._id) || currentUser.isAdmin)){ %>
+								<div class="manage-box d-flex justify-content-end">
 									<a class="btn btn-warning mr-1" href="/campgrounds/<%= campground._id %>/edit">Edit</a>
 									<form class="ml-1" action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
 										<button class="btn btn-danger">Delete</button>
@@ -78,7 +78,7 @@
 										<div class="card-body">
 											<p class="card-text"><%= comment.text %></p>
 										</div>
-										<% if(currentUser && comment.author.id.equals(currentUser._id)) { %>
+										<% if(currentUser && (comment.author.id.equals(currentUser._id) || currentUser.isAdmin)) { %>
 											<div class="card-footer d-flex justify-content-end">
 												<a class="btn btn-sm btn-warning mr-1" href="/campgrounds/<%=campground._id%>/comments/<%=comment._id%>/edit">Edit</a>
 												<form action="/campgrounds/<%=campground._id%>/comments/<%=comment._id%>?_method=DELETE" method="POST">
