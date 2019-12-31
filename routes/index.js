@@ -10,9 +10,13 @@ router.get('/', (req, res) => {
 	res.render('index');
 });
 
-router.get('/register', middleware.isNotLoggedIn, (req, res) => {
-	res.render('register');
-});
+router.get('/register',
+	middleware.isNotLoggedIn,
+	middleware.getReferer,
+	(req, res) => {
+		res.render('register', {referer: req.referer});
+	}
+);
 
 router.post('/register', middleware.isNotLoggedIn, (req, res) => {
 	if (req.body.username && req.body.password) {
@@ -46,18 +50,25 @@ router.post('/register', middleware.isNotLoggedIn, (req, res) => {
 	}
 });
 
-router.get('/login', middleware.isNotLoggedIn, (req, res) => {
-	res.render('login');
-});
+router.get('/login',
+	middleware.isNotLoggedIn,
+	middleware.getReferer,
+	(req, res) => {
+		res.render('login', {referer: req.referer});
+	}
+);
 
 router.post(
 	'/login',
 	middleware.isNotLoggedIn,
 	passport.authenticate('local', {
-		successRedirect: '/campgrounds',
 		failureRedirect: '/login',
 		failureFlash:    true
-	})
+	}), (req, res) => {
+		message = [`Welcome ${req.user.username}!`, 'You\'ve started a new session, enjoy your stay!'];
+		req.flash('success', message);
+		res.redirect(req.body.referer);
+	}
 );
 
 router.get('/logout', (req, res) => {

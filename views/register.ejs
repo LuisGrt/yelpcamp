@@ -3,8 +3,8 @@
 		<section id="registerForm" class="container">
 			<% if(error && error.length > 0) { %>
 				<div class="alert alert-danger" role="alert">
-					<h4 class="alert-heading"><%=error[0]%></h4>
-					<p><%=error[1]%></p>
+					<h4 class="alert-heading"><%-error[0]%></h4>
+					<p><%-error[1]%></p>
 				</div>
 			<% } %>
 			<div class="card">
@@ -23,6 +23,6 @@
 					</div>
 				</form>
 			</div>
-			<a href="/">Go back!</a>
+			<a href="<%=referer%>">Go back!</a>
 		</section>
 <% include partials/footer %>

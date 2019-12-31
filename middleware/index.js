@@ -68,4 +68,15 @@ middleware.isNotLoggedIn = (req, res, next) => {
 	res.redirect('back');
 };
 
+middleware.getReferer = (req, res, next) => {
+	let ref = req.headers.referer;
+	if (ref) {
+		ref = ref.search('login') != -1 || ref.search('register') != -1 ? '/campgrounds' : ref;
+	} else {
+		ref = '/campgrounds';
+	}
+	req.referer = ref;
+	return next();
+};
+
 module.exports = middleware;

@@ -3,13 +3,14 @@
 		<section id="loginForm" class="container">
 			<% if(error && error.length > 0) { %>
 				<div class="alert alert-danger" role="alert">
-					<h4 class="alert-heading">Oops!</h4>
-					<p><%=error[0]%></p>
+					<h4 class="alert-heading"><%-error[0]%></h4>
+					<p><%-error[1]%></p>
 				</div>
 			<% } %>
 			<div class="card">
 				<h3>Welcome!</h3>
 				<form action="/login" method="POST">
+					<input type="hidden" name="referer" value="<%=referer%>">
 					<div class="form-group">
 						<label for="username">Username</label>
 						<input class="form-control" type="text" name="username" id="username" placeholder="Username">
@@ -23,6 +24,6 @@
 					</div>
 				</form>
 			</div>
-			<a href="/">Go back!</a>
+			<a href="<%=referer%>">Go back!</a>
 		</section>
 <% include partials/footer %>
