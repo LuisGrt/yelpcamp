@@ -1,0 +1,22 @@
+{
+  "name": "yelpcamp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LuisGrt/yelpcamp.git"
+  },
+  "author": "Luis Germán <LuisGermanRT@gmail.com>",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/LuisGrt/yelpcamp/issues"
+  },
+  "homepage": "https://github.com/LuisGrt/yelpcamp#readme",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}
